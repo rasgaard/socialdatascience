@@ -43,9 +43,6 @@ def extract_vehicle_types(df):
     '''
     dfout = df.copy()
     
-    vehicle_types_dict = dict(zip(pd.read_csv('vehicle_types.csv', sep=';')['from_type'], 
-                                  pd.read_csv('vehicle_types.csv', sep=';')['to_type']))
-    
     vehicle_type_columns = [x for x in df.columns if x.startswith('VEHICLE TYPE CODE ')]
 
     vehicle_type_dict = dict(zip(pd.read_csv('vehicle_types.csv', sep=';', keep_default_na=False, na_values=[''])['from'], 
@@ -56,5 +53,24 @@ def extract_vehicle_types(df):
 
     dfout['VEHICLE TYPES'] = df[vehicle_type_columns].values.tolist()
     dfout['VEHICLE TYPES'] = dfout['VEHICLE TYPES'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'none'])))
+
+    return dfout
+
+def extract_contributing_factors(df):
+    '''
+    Takes the 5 CONTRIBUTING FACTOR ... columns, sort and convert it to a single string.
+    '''
+    dfout = df.copy()
+    
+    contributing_factor_columns = [x for x in df.columns if x.startswith('CONTRIBUTING FACTOR VEHICLE ')]
+
+    contributing_factor_dict = dict(zip(pd.read_csv('contributing_factors.csv', sep=';', keep_default_na=False, na_values=[''])['from'], 
+                                        pd.read_csv('contributing_factors.csv', sep=';', keep_default_na=False, na_values=[''])['to'])) 
+
+    for col in contributing_factor_columns:
+        df[col] = df[col].fillna(' ').str.lower().apply(lambda x : contributing_factor_dict[x])
+
+    dfout['CONTRIBUTING FACTORS'] = df[contributing_factor_columns].values.tolist()
+    dfout['CONTRIBUTING FACTORS'] = dfout['CONTRIBUTING FACTORS'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'none'])))
 
     return dfout
