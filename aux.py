@@ -45,14 +45,14 @@ def extract_vehicle_types(df):
     
     vehicle_type_columns = [x for x in df.columns if x.startswith('VEHICLE TYPE CODE ')]
 
-    vehicle_type_dict = dict(zip(pd.read_csv('vehicle_types.csv', sep=';', keep_default_na=False, na_values=[''])['from'], 
-                                  pd.read_csv('vehicle_types.csv', sep=';', keep_default_na=False, na_values=[''])['to'])) 
+    vehicle_type_dict = dict(zip(pd.read_csv('vehicle_types.csv', sep=';', keep_default_na=False, na_values=[''])['Specific'], 
+                                  pd.read_csv('vehicle_types.csv', sep=';', keep_default_na=False, na_values=[''])['General'])) 
 
     for col in vehicle_type_columns:
         df[col] = df[col].fillna(' ').str.lower().apply(lambda x : vehicle_type_dict[x])
 
     dfout['VEHICLE TYPES'] = df[vehicle_type_columns].values.tolist()
-    dfout['VEHICLE TYPES'] = dfout['VEHICLE TYPES'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'none'])))
+    dfout['VEHICLE TYPES'] = dfout['VEHICLE TYPES'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'None'])))
 
     return dfout
 
@@ -64,13 +64,19 @@ def extract_contributing_factors(df):
     
     contributing_factor_columns = [x for x in df.columns if x.startswith('CONTRIBUTING FACTOR VEHICLE ')]
 
-    contributing_factor_dict = dict(zip(pd.read_csv('contributing_factors.csv', sep=';', keep_default_na=False, na_values=[''])['from'], 
-                                        pd.read_csv('contributing_factors.csv', sep=';', keep_default_na=False, na_values=[''])['to'])) 
-
+    contributing_factor_dict = dict(zip(pd.read_csv('contributing_factors.csv', sep=';', keep_default_na=False, na_values=[''])['Specific'], 
+                                        pd.read_csv('contributing_factors.csv', sep=';', keep_default_na=False, na_values=[''])['General'])) 
+    
     for col in contributing_factor_columns:
-        df[col] = df[col].fillna('unspecified').str.lower().apply(lambda x : contributing_factor_dict[x])
-
-    dfout['CONTRIBUTING FACTORS'] = df[contributing_factor_columns].values.tolist()
-    dfout['CONTRIBUTING FACTORS'] = dfout['CONTRIBUTING FACTORS'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'unspecified'])))
+        df[col] = df[col].fillna('Unspecified')
+    
+    dfout['CONTRIBUTING FACTORS (SPECIFIC)'] = df[contributing_factor_columns].values.tolist()
+    dfout['CONTRIBUTING FACTORS (SPECIFIC)'] = dfout['CONTRIBUTING FACTORS (SPECIFIC)'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'Unspecified'])))
+    
+    for col in contributing_factor_columns:
+        df[col] = df[col].apply(lambda x : contributing_factor_dict[x])
+    
+    dfout['CONTRIBUTING FACTORS (GENERAL)'] = df[contributing_factor_columns].values.tolist()
+    dfout['CONTRIBUTING FACTORS (GENERAL)'] = dfout['CONTRIBUTING FACTORS (GENERAL)'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'Unspecified'])))
 
     return dfout
