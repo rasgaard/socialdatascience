@@ -68,9 +68,9 @@ def extract_contributing_factors(df):
                                         pd.read_csv('contributing_factors.csv', sep=';', keep_default_na=False, na_values=[''])['to'])) 
 
     for col in contributing_factor_columns:
-        df[col] = df[col].fillna(' ').str.lower().apply(lambda x : contributing_factor_dict[x])
+        df[col] = df[col].fillna('unspecified').str.lower().apply(lambda x : contributing_factor_dict[x])
 
     dfout['CONTRIBUTING FACTORS'] = df[contributing_factor_columns].values.tolist()
-    dfout['CONTRIBUTING FACTORS'] = dfout['CONTRIBUTING FACTORS'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'none'])))
+    dfout['CONTRIBUTING FACTORS'] = dfout['CONTRIBUTING FACTORS'].apply(lambda x : ', '.join(sorted([y for y in x if y != 'unspecified'])))
 
     return dfout
