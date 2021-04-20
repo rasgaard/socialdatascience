@@ -33,10 +33,15 @@ app.layout = html.Div(
             ],
             className="header",
         ),
+        dcc.Markdown('''
+            # Introduction 
+            
+            This is the introduction, and here, we will show some general stuff about the dataset. 
+            ''', style={'margin-left' : 50}),
         dcc.Tabs([
-        dcc.Tab(label='Intro', children=[
+        dcc.Tab(label='Contributing Factor 1', children=[
             dcc.Markdown('''
-            # Introduction.
+            # Contributing Factor 1
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', style={'margin-left' : 50}),
@@ -51,9 +56,9 @@ app.layout = html.Div(
                 }
             )
         ]),
-        dcc.Tab(label='Tab One', children=[
+        dcc.Tab(label='Contributing Factor 2', children=[
             dcc.Markdown('''
-            # This is the first tab here.
+            # Contributing Factor 2
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', style={'margin-left' : 50}),
@@ -68,9 +73,9 @@ app.layout = html.Div(
                 }
             )
         ]),
-        dcc.Tab(label='Tab Two', children=[
+        dcc.Tab(label='Contributing Factor 3', children=[
             dcc.Markdown('''
-            # This is the second tab.
+            # Contributing Factor 3
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', style={'margin-left' : 50}),
@@ -85,9 +90,9 @@ app.layout = html.Div(
                 }
             )
         ]),
-        dcc.Tab(label='Tab Three', children=[
+        dcc.Tab(label='Contributing Factor 4', children=[
             dcc.Markdown('''
-            # This is the third tab.
+            # Contributing Factor 4
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', style={'margin-left' : 50}),
@@ -102,9 +107,9 @@ app.layout = html.Div(
                 }
             )
         ]),
-        dcc.Tab(label='Tab Four', children=[
+        dcc.Tab(label='Contributing Factor 5', children=[
             dcc.Markdown('''
-            # This is the fourth tab.
+            # Contributing Factor 5
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', style={'margin-left' : 50}),
@@ -119,9 +124,9 @@ app.layout = html.Div(
                 }
             )
         ]),
-        dcc.Tab(label='Tab Five', children=[
+        dcc.Tab(label='Contributing Factor 6', children=[
             dcc.Markdown('''
-            # This is the fifth tab.
+            # Contributing Factor 6
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', style={'margin-left' : 50}),
@@ -139,63 +144,11 @@ app.layout = html.Div(
         ]),
         html.Div(
             children=[
-                html.Div(
-                    children=dcc.Graph(
-                        id="price-chart",
-                        config={"displayModeBar": False},
-                        figure={
-                            "data": [
-                                {
-                                    "x": data["Date"],
-                                    "y": data["AveragePrice"],
-                                    "type": "lines",
-                                    "hovertemplate": "$%{y:.2f}"
-                                                     "<extra></extra>",
-                                },
-                            ],
-                            "layout": {
-                                "title": {
-                                    "text": "Average Price of Avocados",
-                                    "x": 0.05,
-                                    "xanchor": "left",
-                                },
-                                "xaxis": {"fixedrange": True},
-                                "yaxis": {
-                                    "tickprefix": "$",
-                                    "fixedrange": True,
-                                },
-                                "colorway": ["#17B897"],
-                            },
-                        },
-                    ),
-                    className="card",
-                ),
-                html.Div(
-                    children=dcc.Graph(
-                        id="volume-chart",
-                        config={"displayModeBar": False},
-                        figure={
-                            "data": [
-                                {
-                                    "x": data["Date"],
-                                    "y": data["Total Volume"],
-                                    "type": "lines",
-                                },
-                            ],
-                            "layout": {
-                                "title": {
-                                    "text": "Avocados Sold",
-                                    "x": 0.05,
-                                    "xanchor": "left",
-                                },
-                                "xaxis": {"fixedrange": True},
-                                "yaxis": {"fixedrange": True},
-                                "colorway": ["#E12D39"],
-                            },
-                        },
-                    ),
-                    className="card",
-                ),
+            dcc.Markdown('''
+            # Conclusions 
+            
+            Here is where we write the conclusions about the data.
+            ''', style={'margin-left' : 50}),
             ],
             className="wrapper",
         ),
