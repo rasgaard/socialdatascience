@@ -80,28 +80,52 @@ where_borough.update_traces(
     selector=dict(type="choroplethmapbox")
 )
 
-
 where_borough.update_layout(xaxis={'categoryorder':'total descending'})
 # edit axis labels
 where_borough['layout']['xaxis']['title']='Borough'
 where_borough['layout']['yaxis']['title']='Number of collisions'
 
+
 # WHERE ZIP CODE PLOT
+total        = pd.DataFrame(df.groupby(['BOROUGH', 'ZIP CODE']).size().reset_index().values, columns=['Borough', 'ZIP Code', 'Total count'])
+only_injured = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] == 0)&(df['NUMBER OF PERSONS INJURED'] > 0)].groupby(['BOROUGH', 'ZIP CODE']).size().reset_index().values, columns=['Borough', 'ZIP Code', 'Injured count'])
+only_killed  = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] > 0)&(df['NUMBER OF PERSONS INJURED'] == 0)].groupby(['BOROUGH', 'ZIP CODE']).size().reset_index().values, columns=['Borough', 'ZIP Code', 'Killed count'])
+both         = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] > 0)&(df['NUMBER OF PERSONS INJURED'] > 0)].groupby(['BOROUGH', 'ZIP CODE']).size().reset_index().values, columns=['Borough', 'ZIP Code', 'Injured and killed count'])
+
+df_zip_borough = pd.merge(pd.merge(pd.merge(total, only_injured, on=['Borough', 'ZIP Code'], how='left'), only_killed, on=['Borough', 'ZIP Code'], how='left'), both, on=['Borough', 'ZIP Code'], how='left')
+df_zip_borough['Borough'] = df_zip_borough['Borough'].str.title()
+df_zip_borough = df_zip_borough.fillna(0) #Fill missing values with 0.
+df_zip_borough['p'] = df_zip_borough[['Injured count', 'Killed count', 'Injured and killed count']].sum(axis=1)/df_zip_borough['Total count']
+df_zip_borough = df_zip_borough.loc[df_zip_borough['Total count'] > 100]
+
 with urlopen('https://raw.githubusercontent.com/fedhere/PUI2015_EC/master/mam1612_EC/nyc-zip-code-tabulation-areas-polygons.geojson') as response:
     counties = json.load(response)
-
-ZIP_pct = pd.DataFrame(df_serious['ZIP CODE'].value_counts() / df['ZIP CODE'].value_counts()).reset_index()
-ZIP_pct.columns = ['ZIP CODE', 'Percentage']
-ZIP_pct = ZIP_pct[~(ZIP_pct['Percentage'] > .99)]
-
-where_zip = px.choropleth_mapbox(ZIP_pct, 
-                                        geojson=counties, locations='ZIP CODE',
-                                        color='Percentage', featureidkey="properties.postalCode",
+    
+    
+where_zip = px.choropleth_mapbox(df_zip_borough, 
+                                        geojson=counties, locations='ZIP Code',
+                                        color='p', featureidkey="properties.postalCode",
+                                        custom_data=df_zip_borough[['Borough', 'ZIP Code', 'Total count', 'Injured count', 'Killed count', 'Injured and killed count']],
                                         color_continuous_scale="Viridis",
-                                        # range_color=(0, 1),
+                                        range_color=(0, .4),
                                         center={"lat": 40.730610, "lon": -73.935242},
                                         labels={'values':'Number of crashes'},
+                                        opacity=0.5,
                                         mapbox_style="carto-positron", zoom=9)
+
+where_zip.update_traces(
+    hovertemplate="<br>".join([
+        "<b>%{customdata[1]}, %{customdata[0]}</b>",
+        "",
+        "Number of collisions with only injured: %{customdata[3]}",
+        "Number of collisions with only killed: %{customdata[4]}",
+        "Number of collisions with both killed and injured: %{customdata[5]}",
+        "Total number of collisions: %{customdata[2]:}",
+        "",
+        "Probability of a collision being serious: %{z:}",
+    ]),
+    selector=dict(type="choroplethmapbox")
+)
 
 where_zip.update_geos(fitbounds="locations", visible=False)
 where_zip.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
