@@ -46,14 +46,14 @@ app.layout = html.Div(
                 
                 **Percentages:**
                 
-                | Number of persons injured  <br/> Number of persons killed | False  | True   |
+                | Number of persons injured<br/>Number of persons killed | False  | True   |
                 |---------------------------------------------------------|--------|--------|
                 | False                                                   | 79.824 | 20.058 |
                 | True                                                    | 0.087  | 0.028  |
                 
                 **Numbers**
                 
-                | Number of persons injured  <br/> Number of persons killed | False   | True   |
+                | Number of persons injured<br/>Number of persons killed | False   | True   |
                 |---------------------------------------------------------|---------|--------|
                 | False                                                   | 1157463 | 290857 |
                 | True                                                    | 1276    | 417    |
@@ -63,7 +63,7 @@ app.layout = html.Div(
                 
                 # Where Do Serious Collisions Occur? 
                 
-                '''),
+                ''', dangerously_allow_html=True),
                 dcc.Graph(className="plotly", figure=figs.where_borough),
                 dcc.Markdown('''
                 From the two plots above, we can see that Brooklyn has the highest number of collisions as well as the highest risk of a collision being serious. Most of inner Brooklyn has speed limits of 25 mph, while Belt Pwky that runs along the outskirts of Brooklyn has 50 mph. All in all, Brooklyn has a lot of roads with Belt Pkwy being a very has a lot of traffic to and from JFK airport. 
@@ -79,7 +79,7 @@ app.layout = html.Div(
                 
                 In the figure below, you can take a look at the serious collisions for all ZIP codes across time! Remember to hover over and check the data about that specific ZIP code at that specific time. 
                 
-                <sup> <sup> Also, some ZIP codes had very few observations for specific hours, so if you notice that some ZIP codes are disappearing and appearing, it is because ZIP codes with less than 10 total collisions for a given hour is removed. Check e.g ZIP 11697 at hours **09:00** versus **10:00**, it's right there at the bottom! <sup> <sup>
+                Also, some ZIP codes had very few observations for specific hours, so if you notice that some ZIP codes are disappearing and appearing, it is because ZIP codes with less than 10 total collisions for a given hour is removed. Check e.g ZIP 11697 at hours **09:00** versus **10:00**, it's right there at the bottom!
                 """),
                 dcc.Graph(className="plotly", figure=figs.when_hour),
                 dcc.Markdown("""
@@ -104,7 +104,13 @@ app.layout = html.Div(
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', className='tab-content'),
-
+        dcc.Graph(className="wrapper", figure=figs.alcohol),
+        dcc.Markdown("""
+        
+        Diving into the contributing factor 'alcohol involment'. In the last plot we see a similar distribution as the one in the explainer notebook, which looked into the total number of collisions. However in the this plot we have restricted it to only count the ones, where alcohol involment has been a contributing factor of the collision. From that plot, we sort of concluded that we could not see any effect over the years of Vision Zero's campaign 'Choices', which taggets driving while influenced by alcohol directly by showing clear images of how wrong it can go. The first plot above shows on the other hand the seriousness of alcohol involment, i.e. given you are in a moter vehical collision, what is the probability of that collision being serious? Looking specifically at collisions that resultet in being serious, we do on the other hans see an effect. The campaign was launched in March 2016 and already in 2017 the change from the previous year was decreased with 2.23 %. The succes of the campaign was on the other hand short, and already in 2018 the probability increased with 1.24 %.
+        
+        [Link to Visions Zero campaign 'Choices'](http://www.nyc.gov/html/visionzero/pages/initiatives/choices.shtml)
+        """, className='wrapper')
         ]),
         
         dcc.Tab(label='Driver Inattention/Distraction', children=[
@@ -113,11 +119,14 @@ app.layout = html.Div(
             
             This is just plain markdown. This can be used for writing some stuff.
             ''', className='tab-content'),
-
+            dcc.Graph(className='wrapper', figure=figs.distractions),
+            dcc.Markdown("""
+            
+            """, className="wrapper")
         ]),
         dcc.Tab(label='COVID-19', children=[
             dcc.Markdown('''
-            # How has COVID-19 affected the probability of a collision being serious?
+            # How has COVID-19 affected the risk of a collision being serious?
             
             Let's try to plot the probability of a collision being serious in a given day from January 2019 till December 2020.
             ''', className='wrapper'),
@@ -149,6 +158,7 @@ app.layout = html.Div(
         ),
     ]
 )
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
