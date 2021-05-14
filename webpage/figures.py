@@ -161,7 +161,7 @@ df_when['Top1'] = df_when['Top1'].str.replace('CF_','')
 df_when['Top2'] = df_when['Top2'].str.replace('CF_','')
 df_when['Top3'] = df_when['Top3'].str.replace('CF_','')
 
-df_when['p'] = df_when[['N_INJURED', 'N_KILLED', 'N_BOTH']].sum(axis=1) / df_when['N_TOTAL']
+df_when['p'] = (df_when[['N_INJURED', 'N_KILLED', 'N_BOTH']].sum(axis=1) / df_when['N_TOTAL'])*100
 
 df_when = df_when.loc[df_when['N_TOTAL'] > 10]
 
