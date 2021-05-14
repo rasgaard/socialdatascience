@@ -33,16 +33,13 @@ app.layout = html.Div(
         html.Div(
             children=[
                 dcc.Markdown('''
-                # Introduction 
+                # About This Webpage 
                 
-                Hi, and welcome to our website made for our final project in the course [02806](https://kurser.dtu.dk/course/02806) Social Data Science and Visualization! 
+                Hi, and welcome to our website made for our final project in the course [02806 Social Data Science and Visualization!](https://kurser.dtu.dk/course/02806)  
                 
-                Our project explores vehicle collisions in New York City using a [data set](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) provided by the New York Police Department (NYPD). In particular, we would like to focus on and analyze the collisions that resulted in a serious outcome. We define a serious outcome as a collision where at least one person was either injured or killed. Of the 1,450,554 records of collisions in the data set 292,951 are serious as per our definition which is about 20%.
-
+                Our project explores vehicle collisions in New York City using a [data set](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) provided by the New York Police Department (NYPD).
                 
-                The website is thus aimed at providing insight as to where and when it is most likely for a collision to be serious as well as look at what is most likely to contribute to a collision being serious.
-                
-                #Defining Serious Collisions
+                ## Defining Serious Collisions
 
                 For this project, we defined serious collisions as collisions where people are either injured or killed. By using this definition, the goal of Vision Zero is to eliminate all serious traffic collisions in New York City by 2024, and the analysis presented here could therefore help achieve this goal. For a future project, it would be interesting to look more into lethal car collisions, but there is *luckily* not a lot of data on that.  
                 
@@ -62,23 +59,26 @@ app.layout = html.Div(
                 | True                                                    | 1276    | 417    |
 
                 As we can see from the tables above, very few collisions are deadly and therefore we defined *serious* as either injuring or deadly. 
+        
                 
-                ## Where do the collisions occur?
+                #Where Do Serious Collisions Occur? 
+                
                 '''),
                 dcc.Graph(className="plotly", figure=figs.where_borough),
                 dcc.Markdown('''
+                             From the two plots above, we can see that Brooklyn has the highest number of collisions as well as the highest risk of a collision being serious. Most of inner Brooklyn has speed limits of 25 mph, while Belt Pwky that runs along the outskirts of Brooklyn has 50 mph. All in all, Brooklyn has a lot of roads with Belt Pkwy being a very has a lot of traffic to and from JFK airport. 
 
-
+On the other end, we can see that while Manhattan has the lowest risk of a collision being serious, which matches well with Manhattan having very low speed limits. Now, instead of grouping by borough, let's see if any new patterns arise if we group on ZIP code instead!
                             '''),
                 dcc.Graph(className="plotly", figure=figs.where_zip),
  
                 dcc.Markdown("""
-                    Comment on the plot above
+                    Here, we can see that while the probability of a collision being serious is higher on Manhattan, it is actually somewhat local! Some of the central ZIP codes in Brooklyn are definitely worth looking at. 
                     
                     ## When do crashes happen?"""),
                 dcc.Graph(className="plotly", figure=figs.when_hour),
                 dcc.Markdown("""
-                    Comment on the plot above
+                    
                     """),
                 dcc.Graph(className='plotly', figure=figs.when_year),
                 dcc.Markdown("""
