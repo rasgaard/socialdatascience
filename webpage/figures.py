@@ -87,6 +87,11 @@ where_borough.update_traces(
     selector=dict(type="choroplethmapbox")
 )
 
+where_borough.update_layout(xaxis={'categoryorder':'total descending'}, margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
+# edit axis labels
+where_borough['layout']['xaxis']['title']='Borough'
+where_borough['layout']['yaxis']['title']='Number of collisions'
+
 
 # WHERE ZIP CODE PLOT
 total        = pd.DataFrame(df.groupby(['BOROUGH', 'ZIP CODE']).size().reset_index().values, columns=['Borough', 'ZIP Code', 'Total count'])
