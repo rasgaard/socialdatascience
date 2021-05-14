@@ -73,24 +73,48 @@ app.layout = html.Div(
                 dcc.Graph(className="plotly", figure=figs.where_zip),
  
                 dcc.Markdown("""
-                Here, we can see that while the probability of a collision being serious is higher on Manhattan, it is actually somewhat local! Some of the central ZIP codes in Brooklyn are definitely worth looking at. 
-                    
-                    
-                ## When do crashes happen?"""),
+                Here, we can see that while the probability of a collision being serious is higher in Brooklyn, it is actually somewhat local! Some of the central ZIP codes in Brooklyn are definitely worth looking at. 
+                
+                # When Do Serious Collisions Occur?
+                
+                In the figure below, you can take a look at the serious collisions for all ZIP codes across time! Remember to hover over and check the data about that specific ZIP code at that specific time. 
+                
+                <sup> <sup> Also, some ZIP codes had very few observations for specific hours, so if you notice that some ZIP codes are disappearing and appearing, it is because ZIP codes with less than 10 total collisions for a given hour is removed. Check e.g ZIP 11697 at hours **09:00** versus **10:00**, it's right there at the bottom! <sup> <sup>
+                """),
                 dcc.Graph(className="plotly", figure=figs.when_hour),
                 dcc.Markdown("""
+                    In the figure above, we can see that generally, collisions have a high risk of being serious during the night and peaks around 04:00. We can also see that generally, there is a low risk of a collision being serious during rush hour in the morning (08:00 - 09:00). 
                     
+                    # What Factors Make a Collision Serious? 
+                    
+                    In the figure below, you can investigate what factors make a collision serious! Which contributing factors make a collision serious? What is the most and least common contributing factor? These are questions that the figure below should be able to answer!
                     """),
                 dcc.Graph(className='plotly', figure=figs.factor_scatter),
                 dcc.Markdown("""
-                    Comment on bubble plot
+                    In the plot above, we can see that contributing factors that involve pedestrians/cyclists etc. are very dangerous, as we would expect. On the other hand, we can see that normal/slow-speed car-car collisions with contributing factors such as **Unsafe Lane Changing** and **Backing Unsafely** generally have a low risk of being lethal while high-speed, drug fueled collisions have a higher risk of being serious and ultimately lethal.
                     
-
                     Now we'll dive a bit deeper into a few selected topics of interest. Namely the effect of COVID-19 and see if we can spot interesting patterns in cases caused by distracted driving and alcohol involvement respectively.
                     """)
                     ], className='wrapper'),
         html.Div(children=[
         dcc.Tabs([
+        dcc.Tab(label='Alcohol Involvement', children=[
+            dcc.Markdown('''
+            # Tab 2
+            
+            This is just plain markdown. This can be used for writing some stuff.
+            ''', className='tab-content'),
+
+        ]),
+        
+        dcc.Tab(label='Driver Inattention/Distraction', children=[
+            dcc.Markdown('''
+            # Tab 3
+            
+            This is just plain markdown. This can be used for writing some stuff.
+            ''', className='tab-content'),
+
+        ]),
         dcc.Tab(label='COVID-19', children=[
             dcc.Markdown('''
             # How has COVID-19 affected the probability of a collision being serious?
@@ -110,31 +134,13 @@ app.layout = html.Div(
                 Here we try to plot the number of non-serious collisions along with the number of serious collisions. As we suspected the rather high probability of a collision being serious isn't because more reckless driving is taking place, but rather less driving altogehter, resulting in less non-serious collisions.
             """, className="wrapper")
             ]),
-        
-        dcc.Tab(label='Alcohol involvement', children=[
-            dcc.Markdown('''
-            # Tab 2
-            
-            This is just plain markdown. This can be used for writing some stuff.
-            ''', className='tab-content'),
-
-        ]),
-        
-        dcc.Tab(label='Distracted driving', children=[
-            dcc.Markdown('''
-            # Tab 3
-            
-            This is just plain markdown. This can be used for writing some stuff.
-            ''', className='tab-content'),
-
-        ]),
         ]), html.Hr()], style={'width': '1420px', 'margin': '0 auto'}),
         
         html.Div(
             children=[
             
             dcc.Markdown('''
-            # Conclusions 
+            # Summary 
             
             Here is where we write the conclusions about the data.
             '''),
