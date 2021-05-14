@@ -136,6 +136,109 @@ where_zip.update_traces(
 where_zip.update_geos(fitbounds="locations", visible=False)
 where_zip.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
 
+#SCATTER
+#Defining Serious Collisions
+
+For this project, we defined serious collisions as collisions where people are either injured or killed. By using this definition, the goal of Vision Zero is to eliminate all serious traffic collisions in New York City by 2024, and the analysis presented here could therefore help achieve this goal. For a future project, it would be interesting to look more into lethal car collisions, but there is *luckily* not a lot of data on that.  
+
+
+Therefore, this project defines serious as a collision where people were either injured or killed. 
+
+
+	
+
+From the two plots above, we can see that Brooklyn has the highest number of collisions as well as the highest risk of a collision being serious. Most of inner Brooklyn has speed limits of 25 mph, while Belt Pwky that runs along the outskirts of Brooklyn has 50 mph. All in all, Brooklyn has a lot of roads with Belt Pkwy being a very has a lot of traffic to and from JFK airport. 
+
+On the other end, we can see that while Manhattan has the lowest risk of a collision being serious, which matches well with Manhattan having very low speed limits. 
+
+
+
+#When Do Serious Collisions Occur?
+
+In the figure below, data is grouped by ZIP code. For each hour and ZIP code, you can hover over and investigate the most common contributing factors. 
+
+
+It can be seen that during the evening and night, the probability of a collision being serious goes up, as we would expect. Collisions late in the night are more dangerous than collisions during the day. 
+At around **09:00**, the risk of a collision being serious is rather low across all ZIP codes. 
+
+
+
+
+Sources: 
+https://ec.europa.eu/transport/road_safety/specialist/knowledge/speed/speed_is_a_central_issue_in_road_safety/speed_and_the_injury_risk_for_different_speed_levels_en
+https://www1.nyc.gov/html/dot/downloads/pdf/current-pre-vision-zero-speed-limit-maps.pdf
+
+df = pd.read_csv('preprocessed_collisions.csv')
+
+df['CF_Drugs (illegal)'] = (df['CF_Drugs (illegal)']|df['CF_Drugs (Illegal)']); df.drop('CF_Drugs (Illegal)', axis=1, inplace=True)
+df['CF_Cell Phone (hand-held)'] = (df['CF_Cell Phone (hand-held)']|df['CF_Cell Phone (hand-Held)']); df.drop('CF_Cell Phone (hand-Held)', axis=1, inplace=True)
+df['CF_Illness'] = (df['CF_Illness']|df['CF_Illnes']); df.drop('CF_Illnes', axis=1, inplace=True)
+
+
+
+
+
+
+
+
+#FACTOR SCATTER PLOT
+df_factor_scatter = pd.DataFrame()
+
+for index_, df_ in df.groupby([df['NUMBER OF PERSONS KILLED']>0, df['NUMBER OF PERSONS INJURED'] > 0]):
+    df_factor_scatter['Killed_' + str(index_[0]) + '_Injured_' + str(index_[1])] = df_[[x for x in df.columns if x.startswith('CF_')]].sum(axis=0).values
+    
+df_factor_scatter['Contributing Factor'] = [x.replace('CF_','') for x in df_[[x for x in df.columns if x.startswith('CF_')]].columns.tolist()]
+df_factor_scatter.columns = ['No injured', 'Only injured', 'Only killed', 'Both injured and killed', 'Contributing factor']
+df_factor_scatter = df_factor_scatter[['Contributing factor', 'No injured', 'Only injured', 'Only killed', 'Both injured and killed']]
+df_factor_scatter['p_serious'] = df_factor_scatter.iloc[:,2:].sum(axis=1) / df_factor_scatter.iloc[:,1:].sum(axis=1)
+
+df_factor_scatter['p_lethal'] = df_factor_scatter[['Only killed', 'Both injured and killed']].sum(axis=1)\
+                    /df_factor_scatter[['No injured', 'Only injured', 'Only killed', 'Both injured and killed']].sum(axis=1)
+
+df_factor_scatter = df_factor_scatter.loc[~df_factor_scatter['Contributing factor'].isin(['nan', 'Unspecified'])]
+
+df_factor_scatter['p_serious'] = df_factor_scatter['p_serious']*100
+df_factor_scatter['p_lethal']  = df_factor_scatter['p_lethal']*100
+
+df_factor_scatter['Total collisions'] = df_factor_scatter[['No injured', 'Only injured', 'Only killed', 'Both injured and killed']].sum(axis=1)
+
+factor_scatter = px.scatter(df_factor_scatter, x = 'Total collisions', y = 'p_serious', custom_data = ['Contributing factor', 'No injured', 'Only injured', 'Only killed', 'Both injured and killed',
+                                                                                 'p_serious', 'p_lethal', 'Total collisions'], log_x=True, size = 'p_lethal',
+                title='Risk of being serious across factors. Size is the risk of collision being lethal.', height=900, width=1000,)
+factor_scatter.update_layout(
+    xaxis_title="Total number of collisions from 2013-2020",
+    yaxis_title="Risk of collision being serious",
+)
+
+factor_scatter.update_traces(
+    hovertemplate="<br>".join([
+        "<b>%{customdata[0]}</b>",
+        "",
+        "Total number of collisions: %{customdata[7]}",
+        "- Collisions with no killed or injured: %{customdata[1]}",
+        "- Collisions with only injured %{customdata[2]}",
+        "- Collisions with only killed %{customdata[3]}",
+        "- Collisions with both killed and injured %{customdata[4]}",
+        "",
+        "Probability of a collision being serious: %{y:}%",
+        "Probability of a collision being lethal : %{customdata[6]}%",
+    ]),
+    selector=dict(type="scatter"),
+    marker_color='rgb(43,174,128)',
+)
+
+x_annot, y_annot = df_factor_scatter.loc[df_factor_scatter['Contributing factor'] == 'Glare'][['Total collisions', 'p_serious']].iloc[0]
+factor_scatter.add_annotation(x = np.log10(x_annot), y = y_annot, text = "Glare is often serious, but not deadly<br>hence the small dot.", showarrow = True, yshift=0)
+
+x_annot, y_annot = df_factor_scatter.loc[df_factor_scatter['Contributing factor'] == 'Driver Inattention/Distraction'][['Total collisions', 'p_serious']].iloc[0]
+factor_scatter.add_annotation(x = np.log10(x_annot), y = y_annot, text = "Driver Inattention is the most <br> common contributing factor.", showarrow = True, yshift=0)
+
+x_annot, y_annot = df_factor_scatter.loc[df_factor_scatter['Contributing factor'] == 'Alcohol Involvement'][['Total collisions', 'p_serious']].iloc[0]
+factor_scatter.add_annotation(x = np.log10(x_annot), y = y_annot, text = "We will look at this later!", showarrow = True, yshift=0)
+
+
+
+
 
 # HOURLY RISK PLOT
 total = pd.DataFrame(df.groupby(['BOROUGH','ZIP CODE','HOUR']).size().reset_index().values, columns=['BOROUGH', 'ZIP CODE', 'HOUR', 'N_TOTAL'])
