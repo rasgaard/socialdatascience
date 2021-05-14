@@ -41,7 +41,7 @@ app.layout = html.Div(
                 
                 ## Defining Serious Collisions
 
-                For this project, we defined serious collisions as collisions where people are either injured or killed. By using this definition, the goal of Vision Zero is to eliminate all serious traffic collisions in New York City by 2024, and the analysis presented here could therefore help achieve this goal. For a future project, it would be interesting to look more into lethal car collisions, but there is *luckily* not a lot of data on that.  
+                For this project, we defined serious collisions as collisions where people are either injured or killed. By using this definition, the goal of [Vision Zero](https://en.wikipedia.org/wiki/Vision_Zero_(New_York_City)) is to eliminate all serious traffic collisions in New York City by 2024, and the analysis presented here could therefore help achieve this goal. For a future project, it would be interesting to look more into lethal car collisions, but there is *luckily* not a lot of data on that.  
                 
                 
                 **Percentages:**
@@ -81,12 +81,13 @@ app.layout = html.Div(
                 dcc.Markdown("""
                     
                     """),
-                dcc.Graph(className='plotly', figure=figs.when_year),
+                dcc.Graph(className='plotly', figure=figs.factor_scatter),
                 dcc.Markdown("""
-                    By plotting the yearly risk of a collision being serious we notice that the year 2020 has a substantial in comparison to the rest of the years. As the whole world was affected by a pandemic most of this year we suspect that COVID-19 plays a significant role in the risk being this high. We'll investigate this further in the "COVID-19" tab below.
+                    Comment on bubble plot
+                    
 
-                    Furthermore, we will have a look at if there are any interesting patterns from collisions happening because of distracted driving or driving under the influence.
-                            """)
+                    Now we'll dive a bit deeper into a few selected topics of interest. Namely the effect of COVID-19 and see if we can spot interesting patterns in cases caused by distracted driving and alcohol involvement respectively.
+                    """)
                     ], className='wrapper'),
         html.Div(children=[
         dcc.Tabs([
@@ -94,13 +95,23 @@ app.layout = html.Div(
             dcc.Markdown('''
             # How has COVID-19 affected the probability of a collision being serious?
             
-            As seen above, we notice an increase in risk in the year 2020. Let's try to "zoom in" on the plot to include the months from 2019 and 2020. 
+            Let's try to plot the probability of a collision being serious in a given day from January 2019 till December 2020.
             ''', className='wrapper'),
 
-            dcc.Graph(className="wrapper", figure=figs.corona_probtime)
-        ]),
+            dcc.Graph(className="wrapper", figure=figs.corona_probtime),
+
+            dcc.Markdown("""
+                The dots marks the government response to the spread of COVID-19. What we see here is an **increase** in risk when being involved in a collision after COVID-19 was first spotted in New York. How can that be? We suspect that it might be because of road inactivity due to everyone being encouraged to stay at home all of the sudden.
+            """, className="wrapper"),
+            
+            dcc.Graph(className="wrapper", figure=figs.corona_count),
+
+            dcc.Markdown("""
+                Here we try to plot the number of non-serious collisions along with the number of serious collisions. As we suspected the rather high probability of a collision being serious isn't because more reckless driving is taking place, but rather less driving altogehter, resulting in less non-serious collisions.
+            """, className="wrapper")
+            ]),
         
-        dcc.Tab(label='Alcohol', children=[
+        dcc.Tab(label='Alcohol involvement', children=[
             dcc.Markdown('''
             # Tab 2
             
@@ -109,7 +120,7 @@ app.layout = html.Div(
 
         ]),
         
-        dcc.Tab(label='Distraction', children=[
+        dcc.Tab(label='Distracted driving', children=[
             dcc.Markdown('''
             # Tab 3
             
