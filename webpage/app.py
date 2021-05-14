@@ -74,7 +74,7 @@ app.layout = html.Div(
             
             As seen above, we notice an increase in risk in the year 2020. Let's try to "zoom in" on the plot to include the months from 2019 and 2020.
             ''', className='tab-content'),
-            dcc.Graph(className="plotly", figure=figs.when_year)
+            dcc.Graph(className="plotly", figure=figs.corona_probtime)
         ]),
         
         dcc.Tab(label='Tab 2', children=[

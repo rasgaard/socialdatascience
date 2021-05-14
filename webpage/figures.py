@@ -13,10 +13,15 @@ df = pd.read_csv("preprocessed_collisions.csv")
 
 df['YEAR'] = pd.to_datetime(df['CRASH DATE']).dt.year
 df['MONTH'] = pd.to_datetime(df['CRASH DATE']).dt.month
+df['DAY'] = pd.to_datetime(df['CRASH DATE']).dt.day
 df['HOUR'] = pd.to_datetime(df['CRASH TIME']).dt.hour
 
-df_serious = df.query("(`NUMBER OF PERSONS INJURED` + `NUMBER OF PERSONS KILLED`) > 0")
+df['YEARMONTH'] = df['YEAR'].astype(str)+'-'+df['MONTH'].astype(str)
 
+df['YEARMONTHDAY'] = df['YEAR'].astype(str)+'-'+df['MONTH'].astype(str)+'-'+df['DAY'].astype(str)
+df['YEARMONTHDAY'] = pd.to_datetime(df['YEARMONTHDAY'])
+
+df_serious = df.query("(`NUMBER OF PERSONS INJURED` + `NUMBER OF PERSONS KILLED`) > 0")
 
 # WHERE BOROUGH PLOT
 with urlopen('https://raw.githubusercontent.com/dwillis/nyc-maps/master/boroughs.geojson') as response:
@@ -195,3 +200,42 @@ when_year.update_layout(xaxis={'tickmode':'linear',
                         yaxis={'title': 'Risk of serious collision'},
                         title="Yearly risk of a collision being serious",
                         paper_bgcolor='#F7F7F7')
+
+
+recent_df = df.query("YEAR >= 2019")
+
+corona_serious = recent_df.query("(`NUMBER OF PERSONS KILLED` + `NUMBER OF PERSONS INJURED`) > 0")
+corona_nonserious = recent_df.query("(`NUMBER OF PERSONS KILLED` + `NUMBER OF PERSONS INJURED`) <= 0")
+
+corona_prob = pd.DataFrame((corona_serious['YEARMONTHDAY'].value_counts() / recent_df['YEARMONTHDAY'].value_counts())).reset_index()
+corona_prob.columns = ['TIME', 'PROB']
+corona_prob['TIME'] = pd.to_datetime(corona_prob['TIME'])
+corona_prob = corona_prob.sort_values(by='TIME')
+
+actions = pd.DataFrame({"TIME": ["2020-03-7", "2020-03-9", "2020-03-10", "2020-03-12", "2020-03-12", "2020-03-15", "2020-03-16", "2020-03-20", "2020-03-25", "2020-03-27", "2020-03-28", "2020-04-6", "2020-04-9", "2020-04-15", "2020-04-16", "2020-05-1", "2020-05-7", "2020-05-14", "2020-05-15", "2020-05-15", "2020-05-23", "2020-06-8", "2020-06-15", "2020-06-22", "2020-07-10", "2020-07-16", "2020-08-7", "2020-08-19", "2020-10-1", "2020-10-1", "2020-10-6", "2020-11-12", "2020-11-25", "2020-12-8"],
+                        "Action Taken": ["State of emergency declared.", "State began producing its own \nbrand of hand sanitizer.", "Governor Cuomo orders a coronavirus 'containment zone' in \nNew Rochelle, Westchester County, NY.", "All gatherings of less than 500 people ordered to cut capacity by 50%.\n All gatherings of more than 500 people ordered to cancel.", "All SUNY campuses ordered to close within a week, \nand then shift to online for the remainder of the semester.", "All New York City schools ordered \nto close until April 20.", "Cuomo coordinates with his counterparts in New Jersey and \nConnecticut to formulate uniform policies for shutdowns.", "State-wide stay-at-home order declared. \nAll non-essential businesses ordered to close\n. All non-essential gatherings canceled/postponed.", "Advisory issued ordering nursing homes to admit patients who\n test positive for the coronavirus and to not allow testing of prospective nursing home patients.\n This order was revoked on May 10.", "All schools statewide ordered to remain closed until April 15.", "All non-essential construction sites ordered to shut down.", "Statewide stay-at-home order and school\n closures extended to April 29.", "List of businesses deemed essential expanded.", "All state residents ordered to wear face masks/coverings\n in public places where social distancing is not possible.", "Statewide stay-at-home order and school closures extended to May 15.", "All schools and universities ordered to remain closed\n for the remainder of the academic year.", "Statewide four-phase reopening plan is first announced.", "Statewide state of emergency extended to June 13.", "Phase 1 of reopening allowed for counties that met qualifications. Five counties met qualifications and began reopening on this date.", "Drive-in theaters, landscaping/gardening businesses allowed to reopen state-wide (regardless of Phase 1 qualifications).", "Gatherings of up to ten people allowed as long as social distancing is practiced.", "New York City meets conditions for Phase 1, allowing the reopening of construction, manufacturing, agriculture, forestry, fishing, and select retail businesses that can offer curbside pickup.", "Four-phase reopening plan is modified to allow non-essential gatherings of 25 people upon entry of Phase 3, and 50 people upon entry of Phase 4.", "New York City meets conditions for Phase 2, allowing the reopening of outdoor dining at restaurants, hair salons and barber shops, offices, real estate firms, in-store retail, vehicle sales, retail rental, repair services, cleaning services, and commercial building management businesses.", "Malls allowed to open at 25% capacity for regions in Phase 4, with all patrons required to wear masks.", "New restrictions on bars/restaurants only allowing alcohol to be served only to people ordering food.", "Schools allowed to open in-person in the fall if certain conditions are met.", "Ban on ticketed music events at bars and restaurants.", "Exposure notification apps are added to notify users of potential exposure.", "The previous ban on ticketed events at bars and restaurants is ruled unconstitutional.", "Micro-cluster strategy is introduced, with the first micro-clusters being parts of Brooklyn and Queens.", "Bars, gyms, and any other business with a liquor license must close by 10 p.m. (restaurants as well, except for curbside pickup). \nHousehold gatherings limited to ten people.", "Previous restrictions on capacity through the micro-cluster strategy for places of worship is ruled unconstitutional.", "Hospital bed capacity statewide is demanded to be upgraded by 25 percent.",]})
+actions['TIME'] = pd.to_datetime(actions['TIME'])
+actions = pd.merge(actions, corona_prob)
+
+corona_probtime = px.line(corona_prob, x='TIME', y="PROB")
+corona_probtime.add_trace(go.Scatter(mode='markers',
+                         x=actions['TIME'], 
+                         y=actions['PROB'], 
+                         text=actions['Action Taken']))
+corona_probtime.update_xaxes(rangeslider_visible=True, title="Time")
+corona_probtime.update_layout(showlegend=False, yaxis={"title": "Probability of a collision being serious."})
+
+corona_count = go.Figure()
+
+corona_nonserious_count = corona_nonserious['YEARMONTH'].value_counts().rename_axis("Yearmonth").reset_index(name="counts")
+corona_serious_count = corona_serious['YEARMONTH'].value_counts().rename_axis("Yearmonth").reset_index(name="counts")
+
+corona_count.add_trace(go.Scatter(x=pd.to_datetime(corona_nonserious_count['Yearmonth']).sort_values(),
+                         y=corona_nonserious_count['counts'],
+                         mode="lines+markers",
+                         name="Non-serious collisions"))
+corona_count.add_trace(go.Scatter(x=pd.to_datetime(corona_serious_count['Yearmonth']).sort_values(),
+                         y=corona_serious_count['counts'],
+                         mode="lines+markers",
+                         name="Serious collisions"))
+corona_count.update_layout(title="Comparing serious vs. non-serious collisions during COVID")
