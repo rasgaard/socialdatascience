@@ -61,7 +61,7 @@ app.layout = html.Div(
                 As we can see from the tables above, very few collisions are deadly and therefore we defined *serious* as either injuring or deadly. 
         
                 
-                #Where Do Serious Collisions Occur? 
+                # Where Do Serious Collisions Occur? 
                 
                 '''),
                 dcc.Graph(className="plotly", figure=figs.where_borough),
@@ -84,6 +84,8 @@ app.layout = html.Div(
                 dcc.Graph(className='plotly', figure=figs.when_year),
                 dcc.Markdown("""
                     By plotting the yearly risk of a collision being serious we notice that the year 2020 has a substantial in comparison to the rest of the years. As the whole world was affected by a pandemic most of this year we suspect that COVID-19 plays a significant role in the risk being this high. We'll investigate this further in the "COVID-19" tab below.
+
+                    Furthermore, we will have a look at if there are any interesting patterns from collisions happening because of distracted driving or driving under the influence.
                             """)
                     ], className='wrapper'),
         html.Div(children=[

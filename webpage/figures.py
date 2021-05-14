@@ -55,7 +55,7 @@ where_borough.add_trace(
 #'style': "stamen-terrain"
 #carto-positron
 where_borough.update_layout(mapbox_style="carto-positron", mapbox_center = {"lat": 40.712772, "lon": -74.006058}, mapbox_zoom=9)
-where_borough.update_layout(height=600, width=1200, title_text='Car collisions across Borough in New York City, 2012-2020')
+where_borough.update_layout(height=600, title_text='Car collisions across Borough in New York City, 2012-2020')
 
 #Update the bar trace.
 where_borough.update_traces(
@@ -86,7 +86,7 @@ where_borough.update_traces(
     selector=dict(type="choroplethmapbox")
 )
 
-where_borough.update_layout(xaxis={'categoryorder':'total descending'})
+where_borough.update_layout(xaxis={'categoryorder':'total descending'}, margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
 # edit axis labels
 where_borough['layout']['xaxis']['title']='Borough'
 where_borough['layout']['yaxis']['title']='Number of collisions'
@@ -180,9 +180,7 @@ when_hour = px.choropleth_mapbox(df_when, geojson=counties, locations='ZIP code'
                            #labels={'values':'Number of crashes'},
                            mapbox_style="carto-positron", zoom=9, height = 800)
 
-when_hour.update_layout(coloraxis_colorbar=dict(
-    title="p",
-))
+when_hour.update_layout(coloraxis_colorbar=dict(title="p",), margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
 
 # YEARLY RISK PLOT
 yearly_risk = pd.DataFrame(df_serious['YEAR'].value_counts() \
@@ -221,7 +219,7 @@ corona_probtime.add_trace(go.Scatter(mode='markers',
                          y=actions['PROB'], 
                          text=actions['Action Taken']))
 corona_probtime.update_xaxes(rangeslider_visible=True, title="Time")
-corona_probtime.update_layout(showlegend=False, yaxis={"title": "Probability of a collision being serious."})
+corona_probtime.update_layout(showlegend=False, yaxis={"title": "Probability of a collision being serious."}, margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
 
 corona_count = go.Figure()
 
@@ -236,4 +234,4 @@ corona_count.add_trace(go.Scatter(x=pd.to_datetime(corona_serious_count['Yearmon
                          y=corona_serious_count['counts'],
                          mode="lines+markers",
                          name="Serious collisions"))
-corona_count.update_layout(title="Comparing serious vs. non-serious collisions during COVID")
+corona_count.update_layout(title="Comparing serious vs. non-serious collisions during COVID", margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
