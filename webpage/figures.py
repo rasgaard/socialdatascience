@@ -227,8 +227,8 @@ factor_scatter.update_traces(
         "- Collisions with only killed %{customdata[3]}",
         "- Collisions with both killed and injured %{customdata[4]}",
         "",
-        "Probability of a collision being serious: %{y:}%",
-        "Probability of a collision being lethal : %{customdata[6]}%",
+        "Probability of a collision being serious: %{y:.2f}%",
+        "Probability of a collision being lethal : %{customdata[6]:.2f}%",
     ]),
     selector=dict(type="scatter"),
     marker_color='rgb(43,174,128)',
@@ -337,7 +337,7 @@ df_temp33['Probability of being either injuring or deadly'] = (df_temp33['Seriou
 df_temp33['change'] = df_temp33['Probability of being either injuring or deadly'].pct_change().fillna(0)*100
 
 alcohol = make_subplots(rows=2, cols=1,
-                   subplot_titles=("Seriousness of alcohol involment collisions",
+                   subplot_titles=("Seriousness of Alcohol Involvement collisions",
                                    "Number of collisions where alcohol was a contributing factor"))
 
 alcohol.add_trace(
@@ -351,7 +351,7 @@ alcohol.update_traces(
     hovertemplate="<br>".join([
         "Year: %{x}",
         "Probability of collision being either injuring or deadly given",
-        "that alcohol involment was a contributing factor: %{y:.2f} %"]
+        "that Alcohol Involvement was a contributing factor: %{y:.2f} %"]
     ),
 )
 

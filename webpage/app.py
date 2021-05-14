@@ -35,13 +35,16 @@ app.layout = html.Div(
                 dcc.Markdown('''
                 # About This Webpage 
                 
-                Hi, and welcome to our website made for our final project in the course [02806 Social Data Science and Visualization!](https://kurser.dtu.dk/course/02806)  
+                Hi, and welcome to our website made for our final project in the course []()  <a href="https://kurser.dtu.dk/course/02806" target="_blank">02806 Social Data Science and Visualization!</a>
                 
-                Our project explores vehicle collisions in New York City using a [data set](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95) provided by the New York Police Department (NYPD).
+                Our project explores vehicle collisions in New York City using a <a href="https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95" target="_blank">data set</a> provided by the New York Police Department (NYPD).
                 
+                The problem of car collisions in New York city is estimated to cost the city's economy $4 billion yearly when taking everything from medical expenses to property damage into account. We would like to help with understanding *when* and *where* this problem occurs as that is often the first step to prevention. We will also look at a few selected topics of interest to analyse further. 
+
+                We encourage you, the reader, to interact with our visualizations to hopefully get the full experience and learn something new and exciting.
                 ## Defining Serious Collisions
 
-                For this project, we defined serious collisions as collisions where people are either injured or killed. By using this definition, the goal of [Vision Zero](https://en.wikipedia.org/wiki/Vision_Zero_(New_York_City)) is to eliminate all serious traffic collisions in New York City by 2024, and the analysis presented here could therefore help achieve this goal. For a future project, it would be interesting to look more into lethal car collisions, but there is *luckily* not a lot of data on that.  
+                For this project, we defined serious collisions as collisions where people are either injured or killed. By using this definition, the goal of <a href="https://en.wikipedia.org/wiki/Vision_Zero_(New_York_City)" target="_blank">Vision Zero</a> is to eliminate all serious traffic collisions in New York City by 2024, and the analysis presented here could therefore help achieve this goal. For a future project, it would be interesting to look more into lethal car collisions, but there is *luckily* not a lot of data on that.  
                 
                 
                 **Percentages:**
@@ -103,7 +106,7 @@ app.layout = html.Div(
             # Tab 2
             
             This is just plain markdown. This can be used for writing some stuff.
-            ''', className='tab-content'),
+            ''', className='wrapper'),
         dcc.Graph(className="wrapper", figure=figs.alcohol),
         dcc.Markdown("""
         
@@ -118,7 +121,7 @@ app.layout = html.Div(
             # Tab 3
             
             This is just plain markdown. This can be used for writing some stuff.
-            ''', className='tab-content'),
+            ''', className='wrapper'),
             dcc.Graph(className='wrapper', figure=figs.distractions),
             dcc.Markdown("""
             
@@ -161,4 +164,4 @@ app.layout = html.Div(
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(host="0.0.0.0")
