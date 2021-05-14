@@ -61,16 +61,20 @@ app.layout = html.Div(
                 dcc.Markdown("""
                     Comment on the plot above
                     """),
-                dcc.Graph(className='plotly', figure=figs.when_year)
+                dcc.Graph(className='plotly', figure=figs.when_year),
+                dcc.Markdown("""
+                    By plotting the yearly risk of a collision being serious we notice that the year 2020 has a substantial in comparison to the rest of the years. As the whole world was affected by a pandemic most of this year we suspect that COVID-19 plays a significant role in the risk being this high. We'll investigate this further in the "COVID-19" tab below.
+                            """)
                     ], className='wrapper'),
         html.Div(children=[
         dcc.Tabs([
-        dcc.Tab(label='Tab 1', children=[
+        dcc.Tab(label='COVID-19', children=[
             dcc.Markdown('''
-            # Tab 1
+            # How has COVID-19 affected the probability of a collision being serious?
             
-            This is just plain markdown. This can be used for writing some stuff.
+            As seen above, we notice an increase in risk in the year 2020. Let's try to "zoom in" on the plot to include the months from 2019 and 2020.
             ''', className='tab-content'),
+            dcc.Graph(className="plotly", figure=figs.when_year)
         ]),
         
         dcc.Tab(label='Tab 2', children=[
@@ -107,4 +111,4 @@ app.layout = html.Div(
 )
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=False)

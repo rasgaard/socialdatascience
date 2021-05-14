@@ -13,6 +13,7 @@ df = pd.read_csv("preprocessed_collisions.csv")
 
 df['YEAR'] = pd.to_datetime(df['CRASH DATE']).dt.year
 df['MONTH'] = pd.to_datetime(df['CRASH DATE']).dt.month
+df['HOUR'] = pd.to_datetime(df['CRASH TIME']).dt.hour
 
 df_serious = df.query("(`NUMBER OF PERSONS INJURED` + `NUMBER OF PERSONS KILLED`) > 0")
 
@@ -132,17 +133,53 @@ where_zip.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor='#F7F7F7
 
 
 # HOURLY RISK PLOT
-hourly_risk = pd.DataFrame(pd.to_datetime(df_serious['CRASH TIME']).dt.hour.value_counts() \
-                       / pd.to_datetime(df['CRASH TIME']).dt.hour.value_counts()).reset_index()
-hourly_risk.columns = ['Hour', 'Percentage']
+total = pd.DataFrame(df.groupby(['BOROUGH','ZIP CODE','HOUR']).size().reset_index().values, columns=['BOROUGH', 'ZIP CODE', 'HOUR', 'N_TOTAL'])
+injured = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] == 0)&(df['NUMBER OF PERSONS INJURED'] > 0)].groupby(['BOROUGH','ZIP CODE','HOUR']).size().reset_index().values, columns=['BOROUGH', 'ZIP CODE', 'HOUR', 'N_INJURED'])
+killed = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] > 0)&(df['NUMBER OF PERSONS INJURED'] == 0)].groupby(['BOROUGH','ZIP CODE','HOUR']).size().reset_index().values, columns=['BOROUGH', 'ZIP CODE', 'HOUR', 'N_KILLED'])
+both = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] > 0)&(df['NUMBER OF PERSONS INJURED'] > 0)].groupby(['BOROUGH','ZIP CODE','HOUR']).size().reset_index().values, columns=['BOROUGH', 'ZIP CODE', 'HOUR', 'N_BOTH'])
 
-when_hour = px.bar(hourly_risk,
-                   x='Hour', y='Percentage')
-when_hour.update_layout(xaxis={'tickmode':'linear', 
-                               'title': 'Hour of the day'},
-                       yaxis={'title': 'Risk of serious collision'},title="Hourly risk of a collision being serious",
-                       paper_bgcolor='#F7F7F7')
+df_when = pd.merge(pd.merge(pd.merge(total, injured, how='left', on = ['BOROUGH','ZIP CODE','HOUR']), killed, how='left', on=['BOROUGH','ZIP CODE','HOUR']), both, how='left', on=['BOROUGH','ZIP CODE','HOUR'])
+df_when = df_when.fillna(0)
 
+df_when = pd.merge(df_when, df.groupby(['BOROUGH','ZIP CODE','HOUR']).sum().reset_index()[['BOROUGH', 'ZIP CODE', 'HOUR'] + [x for x in df.columns if x.startswith('CF_')]], how='left', on=['BOROUGH', 'ZIP CODE', 'HOUR'])
+
+subset = df_when[[x for x in df_when.columns if x.startswith('CF_') if x not in ['CF_nan', 'CF_Unspecified']]]
+
+df_when = df_when.join(pd.DataFrame(subset.apply(lambda x: list(subset.columns[np.array(x).argsort()[::-1][:3]]), axis=1).to_list(),  columns=['Top1', 'Top2', 'Top3']))
+
+df_when = df_when.drop([x for x in df_when.columns if x.startswith('CF_')], axis=1)
+
+df_when['Top1'] = df_when['Top1'].str.replace('CF_','')
+df_when['Top2'] = df_when['Top2'].str.replace('CF_','')
+df_when['Top3'] = df_when['Top3'].str.replace('CF_','')
+
+df_when['p'] = df_when[['N_INJURED', 'N_KILLED', 'N_BOTH']].sum(axis=1) / df_when['N_TOTAL']
+
+df_when = df_when.loc[df_when['N_TOTAL'] > 10]
+
+df_when.columns = ['Borough', 'ZIP code', 'Hour', 'Total number of collisions', 'Number of collisions with only injured', 'Number of collisions with killed', 'Number of collisions with both killed and injured', 'Most common contributing factor', '2nd most common contributing factor', '3rd most common contributing factor', 'Probability of a collision being serious']
+
+when_hour = px.choropleth_mapbox(df_when, geojson=counties, locations='ZIP code', color='Probability of a collision being serious', 
+                           hover_data = ['Total number of collisions', 'Number of collisions with only injured',
+                                         'Number of collisions with killed',
+                                         'Number of collisions with both killed and injured',
+                                         'Most common contributing factor',
+                                         '2nd most common contributing factor',
+                                         '3rd most common contributing factor'],
+                           featureidkey="properties.postalCode",
+                           color_continuous_scale="Viridis",
+                           range_color=(0, df_when['Probability of a collision being serious'].max()),
+                           animation_frame="Hour",
+                           category_orders={"Hour": list(np.append(np.arange(18,24), np.arange(0, 18)))},
+                           center={"lat": 40.730610, "lon": -73.935242},
+                           #labels={'values':'Number of crashes'},
+                           mapbox_style="carto-positron", zoom=9,
+                           width = 800, height = 800,
+                          )
+
+when_hour.update_layout(coloraxis_colorbar=dict(
+    title="p",
+))
 
 # YEARLY RISK PLOT
 yearly_risk = pd.DataFrame(df_serious['YEAR'].value_counts() \
