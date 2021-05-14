@@ -102,7 +102,7 @@ both         = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] > 0)&(df['NUM
 df_zip_borough = pd.merge(pd.merge(pd.merge(total, only_injured, on=['Borough', 'ZIP Code'], how='left'), only_killed, on=['Borough', 'ZIP Code'], how='left'), both, on=['Borough', 'ZIP Code'], how='left')
 df_zip_borough['Borough'] = df_zip_borough['Borough'].str.title()
 df_zip_borough = df_zip_borough.fillna(0) #Fill missing values with 0.
-df_zip_borough['p'] = df_zip_borough[['Injured count', 'Killed count', 'Injured and killed count']].sum(axis=1)/df_zip_borough['Total count']
+df_zip_borough['p'] = (df_zip_borough[['Injured count', 'Killed count', 'Injured and killed count']].sum(axis=1)/df_zip_borough['Total count'])*100
 df_zip_borough = df_zip_borough.loc[df_zip_borough['Total count'] > 100]
 
 with urlopen('https://raw.githubusercontent.com/fedhere/PUI2015_EC/master/mam1612_EC/nyc-zip-code-tabulation-areas-polygons.geojson') as response:
@@ -114,11 +114,13 @@ where_zip = px.choropleth_mapbox(df_zip_borough,
                                         color='p', featureidkey="properties.postalCode",
                                         custom_data=df_zip_borough[['Borough', 'ZIP Code', 'Total count', 'Injured count', 'Killed count', 'Injured and killed count']],
                                         color_continuous_scale="Viridis",
-                                        range_color=(0, .4),
+                                        range_color=(0, 40),
                                         center={"lat": 40.730610, "lon": -73.935242},
                                         labels={'values':'Number of crashes'},
                                         opacity=0.5,
                                         mapbox_style="carto-positron", zoom=9)
+
+where_zip.layout.coloraxis.colorbar.title = '%'
 
 where_zip.update_traces(
     hovertemplate="<br>".join([
@@ -129,7 +131,7 @@ where_zip.update_traces(
         "Number of collisions with both killed and injured: %{customdata[5]}",
         "Total number of collisions: %{customdata[2]:}",
         "",
-        "Probability of a collision being serious: %{z:}",
+        "Probability of a collision being serious: %{z:}%",
     ]),
     selector=dict(type="choroplethmapbox")
 )
@@ -159,7 +161,7 @@ df_when['Top1'] = df_when['Top1'].str.replace('CF_','')
 df_when['Top2'] = df_when['Top2'].str.replace('CF_','')
 df_when['Top3'] = df_when['Top3'].str.replace('CF_','')
 
-df_when['p'] = df_when[['N_INJURED', 'N_KILLED', 'N_BOTH']].sum(axis=1) / df_when['N_TOTAL']
+df_when['p'] = (df_when[['N_INJURED', 'N_KILLED', 'N_BOTH']].sum(axis=1) / df_when['N_TOTAL'])*100
 
 df_when = df_when.loc[df_when['N_TOTAL'] > 10]
 
