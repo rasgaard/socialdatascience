@@ -178,9 +178,7 @@ when_hour = px.choropleth_mapbox(df_when, geojson=counties, locations='ZIP code'
                            category_orders={"Hour": list(np.append(np.arange(18,24), np.arange(0, 18)))},
                            center={"lat": 40.730610, "lon": -73.935242},
                            #labels={'values':'Number of crashes'},
-                           mapbox_style="carto-positron", zoom=9,
-                           width = 800, height = 800,
-                          )
+                           mapbox_style="carto-positron", zoom=9, height = 800)
 
 when_hour.update_layout(coloraxis_colorbar=dict(
     title="p",

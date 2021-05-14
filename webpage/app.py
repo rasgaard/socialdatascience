@@ -46,14 +46,14 @@ app.layout = html.Div(
                 
                 **Percentages:**
                 
-                | Number of persons injured <br> Number of persons killed | False  | True   |
+                | Number of persons injured  <br/> Number of persons killed | False  | True   |
                 |---------------------------------------------------------|--------|--------|
                 | False                                                   | 79.824 | 20.058 |
                 | True                                                    | 0.087  | 0.028  |
                 
                 **Numbers**
                 
-                | Number of persons injured <br> Number of persons killed | False   | True   |
+                | Number of persons injured  <br/> Number of persons killed | False   | True   |
                 |---------------------------------------------------------|---------|--------|
                 | False                                                   | 1157463 | 290857 |
                 | True                                                    | 1276    | 417    |
@@ -66,16 +66,17 @@ app.layout = html.Div(
                 '''),
                 dcc.Graph(className="plotly", figure=figs.where_borough),
                 dcc.Markdown('''
-                             From the two plots above, we can see that Brooklyn has the highest number of collisions as well as the highest risk of a collision being serious. Most of inner Brooklyn has speed limits of 25 mph, while Belt Pwky that runs along the outskirts of Brooklyn has 50 mph. All in all, Brooklyn has a lot of roads with Belt Pkwy being a very has a lot of traffic to and from JFK airport. 
-
-On the other end, we can see that while Manhattan has the lowest risk of a collision being serious, which matches well with Manhattan having very low speed limits. Now, instead of grouping by borough, let's see if any new patterns arise if we group on ZIP code instead!
+                From the two plots above, we can see that Brooklyn has the highest number of collisions as well as the highest risk of a collision being serious. Most of inner Brooklyn has speed limits of 25 mph, while Belt Pwky that runs along the outskirts of Brooklyn has 50 mph. All in all, Brooklyn has a lot of roads with Belt Pkwy being a very has a lot of traffic to and from JFK airport. 
+                
+                On the other end, we can see that while Manhattan has the lowest risk of a collision being serious, which matches well with Manhattan having very low speed limits. Now, instead of grouping by borough, let's see if any new patterns arise if we group on ZIP code instead!
                             '''),
                 dcc.Graph(className="plotly", figure=figs.where_zip),
  
                 dcc.Markdown("""
-                    Here, we can see that while the probability of a collision being serious is higher on Manhattan, it is actually somewhat local! Some of the central ZIP codes in Brooklyn are definitely worth looking at. 
+                Here, we can see that while the probability of a collision being serious is higher on Manhattan, it is actually somewhat local! Some of the central ZIP codes in Brooklyn are definitely worth looking at. 
                     
-                    ## When do crashes happen?"""),
+                    
+                ## When do crashes happen?"""),
                 dcc.Graph(className="plotly", figure=figs.when_hour),
                 dcc.Markdown("""
                     
@@ -91,12 +92,13 @@ On the other end, we can see that while Manhattan has the lowest risk of a colli
             dcc.Markdown('''
             # How has COVID-19 affected the probability of a collision being serious?
             
-            As seen above, we notice an increase in risk in the year 2020. Let's try to "zoom in" on the plot to include the months from 2019 and 2020.
-            ''', className='tab-content'),
-            dcc.Graph(className="plotly", figure=figs.corona_probtime)
+            As seen above, we notice an increase in risk in the year 2020. Let's try to "zoom in" on the plot to include the months from 2019 and 2020. 
+            ''', className='wrapper'),
+
+            dcc.Graph(className="wrapper", figure=figs.corona_probtime)
         ]),
         
-        dcc.Tab(label='Tab 2', children=[
+        dcc.Tab(label='Alcohol', children=[
             dcc.Markdown('''
             # Tab 2
             
@@ -105,7 +107,7 @@ On the other end, we can see that while Manhattan has the lowest risk of a colli
 
         ]),
         
-        dcc.Tab(label='Tab 3', children=[
+        dcc.Tab(label='Distraction', children=[
             dcc.Markdown('''
             # Tab 3
             
@@ -113,7 +115,7 @@ On the other end, we can see that while Manhattan has the lowest risk of a colli
             ''', className='tab-content'),
 
         ]),
-        ]), html.Hr()], style={'max-width': '1420px', 'margin': '0 auto'}),
+        ]), html.Hr()], style={'width': '1420px', 'margin': '0 auto'}),
         
         html.Div(
             children=[
@@ -130,4 +132,4 @@ On the other end, we can see that while Manhattan has the lowest risk of a colli
 )
 
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)
