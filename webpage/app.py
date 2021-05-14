@@ -85,14 +85,16 @@ app.layout = html.Div(
         dcc.Tabs([
         dcc.Tab(label='Alcohol Involvement and Campaigns', children=[
             dcc.Markdown('''
-            # Tab 2
+            # Do campaigns matter?
             
-            This is just plain markdown. This can be used for writing some stuff.
+            Diving into the contributing factor 'Alcohol Involment'.
             ''', className='wrapper'),
         dcc.Graph(className="wrapper", figure=figs.alcohol),
         dcc.Markdown("""
         
-        Diving into the contributing factor 'Alcohol Involment'. In the last plot we see a similar distribution as the one in the explainer notebook, which looked into the total number of collisions. However in the this plot we have restricted it to only count the ones, where alcohol involment has been a contributing factor of the collision. From that plot, we sort of concluded that we could not see any effect over the years of Vision Zero's campaign 'Choices', which taggets driving while influenced by alcohol directly by showing clear images of how wrong it can go. The first plot above shows on the other hand the seriousness of alcohol involment, i.e. given you are in a moter vehical collision, what is the probability of that collision being serious? Looking specifically at collisions that resultet in being serious, we do on the other hans see an effect. The campaign was launched in March 2016 and already in 2017 the change from the previous year was decreased with 2.23 %. The succes of the campaign was on the other hand short, and already in 2018 the probability increased with 1.24 %.
+        In the bottom plot we see that the amount of collisions with Alcohol Involvement as a contributing factor peaks in 2017. From this, we suspected that we could not see any effect over the years of Vision Zero's campaign 'Choices', which targets the problem of driving under the influence of alcohol by informing the public about the safety risks. 
+        
+        The plot above shows on the other hand the seriousness of Alcohol Involment, i.e. given you are in a collision, what is the probability of that collision being serious? By looking at this metric instead of just counting occurences we see a clear effect that might be caused by the campaign. The campaign was launched in March 2016 and already in 2017 the change from the previous year was decreased with 2.23 %. The apparent success of the campaign was on the other hand short, and already in 2018 the probability increased with 1.24 %.
         
         [Link to Visions Zero campaign 'Choices'](http://www.nyc.gov/html/visionzero/pages/initiatives/choices.shtml)
         """, className='wrapper')
@@ -100,13 +102,12 @@ app.layout = html.Div(
         
         dcc.Tab(label='Driver Inattention/Distraction over Time', children=[
             dcc.Markdown('''
-            # Tab 3
+            # Is there a trend with distracted drivers?
             
-            This is just plain markdown. This can be used for writing some stuff.
             ''', className='wrapper'),
             dcc.Graph(className='wrapper', figure=figs.distractions),
             dcc.Markdown("""
-            
+            Generally, we can see that the number of daily collisions due to Driver Inattention/Distraction is rather high. It can be seen that it jumps up from 2016 until 2017. It can be difficult to say why exactly that is, but it is most likely some sort of change in the way the data is reported. With that aside, we can see that the number of daily collisions with Driver Inattention/Distraction was rather steady from mid-2016 and until COVID-19 hit New York City in March 2020. As we saw earlier with the contributing factors, Driver Inattention/Distraction is a very large contributing factor and also very broad - it could definitely be split into more specific categories such as cell-phone usage or alike.
             """, className="wrapper")
         ]),
         dcc.Tab(label='COVID-19, Lockdown and Collisions', children=[
