@@ -8,7 +8,6 @@ import json
 import pandas as pd
 import numpy as np
 
-
 df = pd.read_csv("preprocessed_collisions.csv")
 
 df['YEAR'] = pd.to_datetime(df['CRASH DATE']).dt.year
