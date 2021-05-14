@@ -63,23 +63,22 @@ app.layout = html.Div(
                 
                 #Where Do Serious Collisions Occur? 
                 
-                
-                
                 '''),
                 dcc.Graph(className="plotly", figure=figs.where_borough),
                 dcc.Markdown('''
+                             From the two plots above, we can see that Brooklyn has the highest number of collisions as well as the highest risk of a collision being serious. Most of inner Brooklyn has speed limits of 25 mph, while Belt Pwky that runs along the outskirts of Brooklyn has 50 mph. All in all, Brooklyn has a lot of roads with Belt Pkwy being a very has a lot of traffic to and from JFK airport. 
 
-
+On the other end, we can see that while Manhattan has the lowest risk of a collision being serious, which matches well with Manhattan having very low speed limits. Now, instead of grouping by borough, let's see if any new patterns arise if we group on ZIP code instead!
                             '''),
                 dcc.Graph(className="plotly", figure=figs.where_zip),
  
                 dcc.Markdown("""
-                    Comment on the plot above
+                    Here, we can see that while the probability of a collision being serious is higher on Manhattan, it is actually somewhat local! Some of the central ZIP codes in Brooklyn are definitely worth looking at. 
                     
                     ## When do crashes happen?"""),
                 dcc.Graph(className="plotly", figure=figs.when_hour),
                 dcc.Markdown("""
-                    Comment on the plot above
+                    
                     """),
                 dcc.Graph(className='plotly', figure=figs.when_year),
                 dcc.Markdown("""
