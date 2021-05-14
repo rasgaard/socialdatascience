@@ -381,10 +381,9 @@ alcohol.update_layout(showlegend=False,margin={"r":0,"t":50,"l":0,"b":0}, paper_
 
 
 # Distractions
+distraction_scatter = pd.DataFrame(df.loc[df['CF_Driver Inattention/Distraction']==1].groupby(df['YEARMONTHDAY']).size().reset_index().values, columns=['Day', 'Count'])
+distractions = px.scatter(distraction_scatter, x='Day', y='Count', title='Number of Daily Collisions with Driver Inattention/Distraction as a Contributing Factor')
 
-df_distraction = df[df['CF_Driver Inattention/Distraction'] == 1]
-distractions = px.bar(pd.DataFrame((df_distraction['YEARMONTH'].value_counts() /\
-                                    df['YEARMONTH'].value_counts()).to_dict().items(), 
-                                    columns=['Date', 'Prob']), x='Date', y='Prob',
-                                    title="Probability of a collision being caused by distractions by month")
-distractions.update_layout(margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
+distractions.update_traces(
+    marker_color='rgb(43,174,128)',
+)
