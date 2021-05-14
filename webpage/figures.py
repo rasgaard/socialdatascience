@@ -227,8 +227,8 @@ factor_scatter.update_traces(
         "- Collisions with only killed %{customdata[3]}",
         "- Collisions with both killed and injured %{customdata[4]}",
         "",
-        "Probability of a collision being serious: %{y:}%",
-        "Probability of a collision being lethal : %{customdata[6]}%",
+        "Probability of a collision being serious: %{y:.2f}%",
+        "Probability of a collision being lethal : %{customdata[6]:.2f}%",
     ]),
     selector=dict(type="scatter"),
     marker_color='rgb(43,174,128)',
@@ -289,4 +289,102 @@ corona_count.add_trace(go.Scatter(x=pd.to_datetime(corona_serious_count['Yearmon
                          mode="lines+markers",
                          name="Serious collisions",
                          marker_color='#461969'))
+
+corona_count.add_annotation(x='2020-03', y=6000,
+            text="New York State Government declares state of emergency" ,
+            showarrow=True,
+            yshift=10)
+corona_count.add_vline(x="2020-03", opacity=0.3)
+
 corona_count.update_layout(title="Comparing serious vs. non-serious collisions during COVID", margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
+
+# Alcohol plot
+
+df['AnyInjured'] = (df['NUMBER OF PERSONS INJURED'] > 0).astype(int)
+df['AnyKilled']  = (df['NUMBER OF PERSONS KILLED'] > 0).astype(int)
+
+df['TIME'] = pd.to_datetime(df['TIME'], format='%Y-%m-%d %H:%M:%S')
+
+
+df_serious = df.loc[(df['NUMBER OF PERSONS KILLED'] + df['NUMBER OF PERSONS INJURED']) > 0]
+df_serious['TIME'] = pd.to_datetime(df_serious['CRASH DATE'] + ' ' + df_serious['CRASH TIME']) #Takes approximately 1 minute.
+
+df_serious = df_serious.loc[~((df_serious['TIME'].dt.year == 2012) | (df_serious['TIME'].dt.year == 2021))]
+
+df_serious_alco =  df_serious[(df_serious['CF_Alcohol Involvement'] == 1)]
+df_alco =  df[(df['CF_Alcohol Involvement'] == 1)]
+
+df_serious_alco['YEAR'] = df_serious_alco['TIME'].dt.year
+df_serious_alco['MONTH'] = df_serious_alco['TIME'].dt.month
+df_serious_alco['WEEKDAY'] = df_serious_alco['TIME'].dt.weekday
+df_serious_alco['HOUR'] = df_serious_alco['TIME'].dt.hour
+
+df_alco['YEAR'] = df_alco['TIME'].dt.year
+df_alco['MONTH'] = df_alco['TIME'].dt.month
+df_alco['WEEKDAY'] = df_alco['TIME'].dt.weekday
+df_alco['HOUR'] = df_alco['TIME'].dt.hour
+
+plot1 = pd.DataFrame(df_serious_alco.groupby('YEAR')['NUMBER OF PERSONS INJURED'].size().reset_index().values, columns=['Year','Number of collisions'])
+
+df_temp11 = df_alco.groupby('YEAR')['NUMBER OF PERSONS INJURED'].sum().reset_index().astype(int); df_temp11.columns = ['Year','Total Count']
+
+df_temp22 = pd.DataFrame(df_alco.loc[(df_alco['AnyInjured']|df_alco['AnyKilled']).astype(bool)].groupby('YEAR').size().reset_index()); df_temp22.columns = ['Year', 'Serious Count']
+
+df_temp33 = pd.merge(df_temp11, df_temp22, how='left')
+
+df_temp33['Probability of being either injuring or deadly'] = (df_temp33['Serious Count']/df_temp33['Total Count'])*100
+
+df_temp33['change'] = df_temp33['Probability of being either injuring or deadly'].pct_change().fillna(0)*100
+
+alcohol = make_subplots(rows=2, cols=1,
+                   subplot_titles=("Seriousness of Alcohol Involvement collisions",
+                                   "Number of collisions where alcohol was a contributing factor"))
+
+alcohol.add_trace(
+    go.Scatter(x = df_temp33["Year"], 
+               y = df_temp33["Probability of being either injuring or deadly"],
+               line_color='#2bae80',
+               name = " "),
+    row=1,col=1,
+)
+alcohol.update_traces(
+    hovertemplate="<br>".join([
+        "Year: %{x}",
+        "Probability of collision being either injuring or deadly given",
+        "that Alcohol Involvement was a contributing factor: %{y:.2f} %"]
+    ),
+)
+
+alcohol.add_trace(
+    go.Scatter(x = plot1["Year"], y = plot1["Number of collisions"],
+               line_color='#461969',
+    name = " "),
+    row=2,col=1  
+) 
+
+
+alcohol.add_annotation(x=2016, y=65.8,
+            text="Vision Zero launch" ,
+            showarrow=False,
+            yshift=10)
+
+alcohol.add_annotation(x=2016, y=64.2,
+            text="'Choices' campaign" ,
+            showarrow=True,
+            yshift=10)
+
+alcohol.update_xaxes(title_text="Year", row=2, col=1)
+alcohol.update_yaxes(title_text="Probability", row=1, col=1)
+alcohol.update_yaxes(title_text="Count", row=2, col=1)
+
+alcohol.update_layout(showlegend=False,margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
+
+
+# Distractions
+
+df_distraction = df[df['CF_Driver Inattention/Distraction'] == 1]
+distractions = px.bar(pd.DataFrame((df_distraction['YEARMONTH'].value_counts() /\
+                                    df['YEARMONTH'].value_counts()).to_dict().items(), 
+                                    columns=['Date', 'Prob']), x='Date', y='Prob',
+                                    title="Probability of a collision being caused by distractions by month")
+distractions.update_layout(margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
