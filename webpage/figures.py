@@ -292,4 +292,11 @@ corona_count.add_trace(go.Scatter(x=pd.to_datetime(corona_serious_count['Yearmon
                          mode="lines+markers",
                          name="Serious collisions",
                          marker_color='#461969'))
+
+corona_count.add_annotation(x='2020-03', y=6000,
+            text="New York State Government declares state of emergency" ,
+            showarrow=True,
+            yshift=10)
+corona_count.add_vline(x="2020-03", opacity=0.3)
+
 corona_count.update_layout(title="Comparing serious vs. non-serious collisions during COVID", margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
