@@ -387,3 +387,4 @@ distractions = px.scatter(distraction_scatter, x='Day', y='Count', title='Number
 distractions.update_traces(
     marker_color='rgb(43,174,128)',
 )
+distractions.update_layout(margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
