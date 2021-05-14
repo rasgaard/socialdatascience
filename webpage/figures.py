@@ -40,8 +40,9 @@ both         = pd.DataFrame(df.loc[(df['NUMBER OF PERSONS KILLED'] > 0)&(df['NUM
 df_borough = pd.merge(pd.merge(pd.merge(total, only_injured, on='Borough'), only_killed, on='Borough'), both, on='Borough')
 
 df_borough = df_borough[['Borough', 'Injured count', 'Killed count', 'Injured and killed count', 'Total count']]
-df_borough['p'] = df_borough[['Injured count', 'Killed count', 'Injured and killed count']].sum(axis=1)/df_borough['Total count']
+df_borough['p'] = (df_borough[['Injured count', 'Killed count', 'Injured and killed count']].sum(axis=1)/df_borough['Total count'])*100
 df_borough['Borough'] = df_borough['Borough'].str.title()
+df_borough['p_lethal'] = (df_borough[['Killed count','Injured and killed count']].sum(axis=1)/df_borough['Total count'])*100
 
 where_borough = make_subplots(rows=1, cols=2, specs=[[{'type': 'xy'},{"type": "mapbox"}]],
                    subplot_titles=('Total number of collisions', 'Probability of a collision being serious'))
@@ -53,13 +54,13 @@ where_borough.add_trace(
 
 where_borough.add_trace(
     go.Choroplethmapbox(geojson=boroughs, locations=df_borough['Borough'], z=df_borough['p'], featureidkey='properties.BoroName',
-    customdata=df_borough[['Borough', 'Injured count', 'Killed count', 'Injured and killed count', 'Total count']],
-    marker_opacity=0.5,  zmin=0, zmax=0.25, colorscale="Viridis"),
+    customdata=df_borough[['Borough', 'Injured count', 'Killed count', 'Injured and killed count', 'Total count', 'p_lethal']],
+    marker_opacity=0.5,  zmin=0, zmax=25, colorscale="Viridis", colorbar={"title": '%'}),
     row=1, col=2
 )
 #'style': "stamen-terrain"
 #carto-positron
-where_borough.update_layout(mapbox_style="carto-positron", mapbox_center = {"lat": 40.712772, "lon": -74.006058}, mapbox_zoom=9)
+where_borough.update_layout(mapbox_style="carto-positron", mapbox_center = {"lat": 40.712772, "lon": -74.006058}, mapbox_zoom=8.5)
 where_borough.update_layout(height=600, title_text='Car collisions across Borough in New York City, 2012-2020')
 
 #Update the bar trace.
@@ -80,13 +81,8 @@ where_borough.update_traces(
 where_borough.update_traces(
     hovertemplate="<br>".join([
         "<b>%{customdata[0]}</b>",
-        "",
-        "Number of collisions with only injured: %{customdata[1]}",
-        "Number of collisions with only killed: %{customdata[2]}",
-        "Number of collisions with both killed and injured: %{customdata[3]}",
-        "Total number of collisions: %{customdata[4]:,}",
-        "",
-        "Probability of a collision being serious: %{z}",
+        "Probability of a collision being serious: %{z}%",
+        "Probability of a collision being lethal: %{customdata[5]:}%"
     ]),
     selector=dict(type="choroplethmapbox")
 )
