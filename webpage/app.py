@@ -42,8 +42,27 @@ app.layout = html.Div(
                 
                 The website is thus aimed at providing insight as to where and when it is most likely for a collision to be serious as well as look at what is most likely to contribute to a collision being serious.
                 
+                #Defining Serious Collisions
 
+                For this project, we defined serious collisions as collisions where people are either injured or killed. By using this definition, the goal of Vision Zero is to eliminate all serious traffic collisions in New York City by 2024, and the analysis presented here could therefore help achieve this goal. For a future project, it would be interesting to look more into lethal car collisions, but there is *luckily* not a lot of data on that.  
+                
+                
+                **Percentages:**
+                
+                | Number of persons injured <br> Number of persons killed | False  | True   |
+                |---------------------------------------------------------|--------|--------|
+                | False                                                   | 79.824 | 20.058 |
+                | True                                                    | 0.087  | 0.028  |
+                
+                **Numbers**
+                
+                | Number of persons injured <br> Number of persons killed | False   | True   |
+                |---------------------------------------------------------|---------|--------|
+                | False                                                   | 1157463 | 290857 |
+                | True                                                    | 1276    | 417    |
 
+                As we can see from the tables above, very few collisions are deadly and therefore we defined *serious* as either injuring or deadly. 
+                
                 ## Where do the collisions occur?
                 '''),
                 dcc.Graph(className="plotly", figure=figs.where_borough),
