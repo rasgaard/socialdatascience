@@ -214,12 +214,17 @@ actions['TIME'] = pd.to_datetime(actions['TIME'])
 actions = pd.merge(actions, corona_prob)
 
 corona_probtime = px.line(corona_prob, x='TIME', y="PROB")
+corona_probtime.update_traces(line_color='rgb(43,174,128)')
 corona_probtime.add_trace(go.Scatter(mode='markers',
                          x=actions['TIME'], 
                          y=actions['PROB'], 
-                         text=actions['Action Taken']))
+                         text=actions['Action Taken'],
+                         marker_color='#461969'))
 corona_probtime.update_xaxes(rangeslider_visible=True, title="Time")
-corona_probtime.update_layout(showlegend=False, yaxis={"title": "Probability of a collision being serious."}, margin={"r":0,"t":50,"l":0,"b":0}, paper_bgcolor='#F7F7F7')
+corona_probtime.update_layout(showlegend=False, 
+                              yaxis={"title": "Probability of a collision being serious."}, 
+                              margin={"r":0,"t":50,"l":0,"b":0}, 
+                              paper_bgcolor='#F7F7F7')
 
 corona_count = go.Figure()
 
